@@ -1,0 +1,10 @@
+<Context reloadable="true">
+	<Resource name="bdd/reso"
+	          auth="Container"
+	          type="javax.sql.DataSource"
+	          username="root"
+	          password="root"
+	          url="jdbc:mysql://localhost:3306/netgest?serverTimezone=GMT"
+	          driverClassName="com.mysql.cj.jdbc.Driver" />
+</Context>
+
