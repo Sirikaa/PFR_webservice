@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cgi.udev.resoapi.model.AdresseIp;
-import com.cgi.udev.resoapi.model.TypeAffectation;
 
 public class AdresseIpDao extends AbstractDao{
 	
 	/*
-	 * Méthode pour récupérer la liste de tous les clients dans la table Client de la BDD
+	 * Méthode pour récupérer la liste de toutes les adresses IP dans la table AdresseIp de la BDD
 	 */
 	public List<AdresseIp> getAll(){
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
@@ -21,8 +20,7 @@ public class AdresseIpDao extends AbstractDao{
 			List<AdresseIp> adressesIp = new ArrayList<AdresseIp>();
 			try(ResultSet rs = stmt.executeQuery("select * from adresseip")){
 				while(rs.next()) {
-					AdresseIp ip = getAdresseIp(rs.getInt("id"));
-					adressesIp.add(ip);
+					adressesIp.add(buildIp(rs));
 				}
 			}
 			return adressesIp;
@@ -32,38 +30,25 @@ public class AdresseIpDao extends AbstractDao{
 	}
 	
 	public AdresseIp getAdresseIp(int id){
+		TypeAffectationDao taDao = new TypeAffectationDao();
 		AdresseIp ip = new AdresseIp();
+		int idTypeAff = 0;
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			
 			try(ResultSet rs = stmt.executeQuery("select * from adresseip where id ="+id)){
 				if(rs.next()) {
-					ip.setId(id);
-					ip.setIpv4(rs.getString("ipV4"));
-					ip.setIpv6(rs.getString("ipV6"));
-					ip.setMasque(rs.getString("masque"));
+					ip = buildIp(rs);
+					idTypeAff = rs.getInt("idtypeaff");
 				}
 			}
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
-		ip.setTypeAffectation(getTypeAffectation(id));
+		ip.setTypeAffectation(taDao.getTypeAffectation(idTypeAff));
 		return ip;
 	}
 	
-	public TypeAffectation getTypeAffectation(int idAdresseIp) {
-		TypeAffectationDao taDao = new TypeAffectationDao();
-		try(Connection connexion = MyDataSource.getSingleton().getConnection();
-			Statement stmt = connexion.createStatement()){
-			TypeAffectation ta = new TypeAffectation();
-			try(ResultSet rs = stmt.executeQuery("select idtypeaff from adresseip where id ="+idAdresseIp)){
-				if(rs.next()) {
-					ta = taDao.getTypeAffectation(rs.getInt("idtypeaff"));
-				}
-				return ta;
-			}		
-		}catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	private AdresseIp buildIp(ResultSet rs) throws SQLException{
+		return new AdresseIp(rs.getInt("id"), rs.getString("ipV4"), rs.getString("ipV6"), rs.getString("masque"));
+    }
 }

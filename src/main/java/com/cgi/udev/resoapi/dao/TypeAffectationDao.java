@@ -31,18 +31,18 @@ public class TypeAffectationDao extends AbstractDao{
 	}
 	
 	public TypeAffectation getTypeAffectation(int id){
+		TypeAffectation ta = new TypeAffectation();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			TypeAffectation ta = new TypeAffectation();
 			try(ResultSet rs = stmt.executeQuery("select * from typeaffectation where id ="+id)){
 				if(rs.next()) {
 					ta.setId(id);
 					ta.setLibelle(rs.getString("libelle"));
 				}
 			}
-			return ta;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return ta;
 	}
 }

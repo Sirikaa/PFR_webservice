@@ -21,6 +21,7 @@ private FonctionDao dao = new FonctionDao();
 		}else {
 			throw new InexistantException("Aucune fonction à afficher !");
 		}
+		//		return !liste.isEmpty() ? liste : throw new InexistantException("Aucune fonction à afficher !");
 	}
 	
 	public Fonction getFonction(int id) throws InexistantException{

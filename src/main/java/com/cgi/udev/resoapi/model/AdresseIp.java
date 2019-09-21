@@ -11,11 +11,13 @@ public class AdresseIp {
 	public AdresseIp() {
 		
 	}
-	public AdresseIp(int id, String ipv4, String masque) {
+	public AdresseIp(int id, String ipv4, String ipV6, String masque) {
 		this.setId(id);
 		this.setIpv4(ipv4);
+		this.setIpv6(ipV6);
 		this.setMasque(masque);
 	}
+	
 	public int getId() {
 		return id;
 	}
