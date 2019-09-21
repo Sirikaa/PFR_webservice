@@ -1,12 +1,11 @@
 package com.cgi.udev.resoapi.model;
 
-public class TypeAffectation {
+public class Statut {
 	private int id;
 	private String libelle;
 	
-	public TypeAffectation() {}
-	public TypeAffectation(int id, String libelle) {
-		this.setId(id);
+	public Statut() {}
+	public Statut(String libelle) {
 		this.setLibelle(libelle);
 	}
 	public int getId() {

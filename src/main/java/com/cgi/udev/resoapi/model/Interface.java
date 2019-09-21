@@ -6,16 +6,17 @@ public class Interface {
 	private String nom;
 	private String mac;
 	private TypeInterface type;
+	private AdresseIp adresseIp;
 	
 	public Interface() {
 		
 	}
-	
 	public Interface(int id, String nom, TypeInterface type) {
 		this.setId(id);
 		this.setNom(nom);
 		this.setType(type);
 	}
+	
 	public int getId() {
 		return id;
 	}
@@ -39,5 +40,13 @@ public class Interface {
 	}
 	public void setType(TypeInterface type) {
 		this.type = type;
+	}
+
+	public AdresseIp getAdresseIp() {
+		return adresseIp;
+	}
+
+	public void setAdresseIp(AdresseIp adresseIp) {
+		this.adresseIp = adresseIp;
 	}
 }

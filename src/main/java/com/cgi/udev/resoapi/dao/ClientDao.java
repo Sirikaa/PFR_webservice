@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cgi.udev.resoapi.model.Client;
+import com.cgi.udev.resoapi.model.Materiel;
 import com.cgi.udev.resoapi.model.Personne;
 
 public class ClientDao extends AbstractDao{
-
+	
 	/*
 	 * Méthode pour récupérer la liste de tous les clients dans la table Client de la BDD
 	 */
@@ -21,19 +22,41 @@ public class ClientDao extends AbstractDao{
 			List<Client> clients = new ArrayList<Client>();
 			try(ResultSet rs = stmt.executeQuery("select * from client")){
 				while(rs.next()) {
-					Client c = new Client(rs.getInt("id"), rs.getString("nom"), rs.getString("adresse1"), rs.getString("adresse2"));
-					int idCpVille = rs.getInt("idcpville");
-					if(!rs.wasNull()) {
-						c.setVille(getVille(idCpVille));
-						c.setCp(getCp(idCpVille));
-						//c.setVille("mon cul");
-					}
+					Client c = getClient(rs.getInt("id"));
 					clients.add(c);
 				}
 			}
 			return clients;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Client getClient(int id){
+		
+		try(Connection connexion = MyDataSource.getSingleton().getConnection();
+				Statement stmt = connexion.createStatement()){
+			Client c = new Client();
+			try(ResultSet rs = stmt.executeQuery("select * from client where id ="+id)){
+				if(rs.next()) {
+					c.setId(rs.getInt("id"));
+					c.setNom(rs.getString("nom"));
+					c.setMatricule(rs.getString("matricule"));
+					c.setPassword(rs.getString("password"));
+					c.setAdresse1(rs.getString("adresse1"));
+					c.setAdresse2(rs.getString("adresse2"));
+					int idCpVille = rs.getInt("idcpville");
+					if(!rs.wasNull()) {
+						c.setVille(getVille(idCpVille));
+						c.setCp(getCp(idCpVille));
+					}
+					c.setContacts(getContacts(rs.getInt("id")));
+					c.setMateriels(getMateriels(rs.getInt("id")));
+				}
+			}
+			return c;
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -52,7 +75,7 @@ public class ClientDao extends AbstractDao{
 			}
 			return ville;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -71,7 +94,7 @@ public class ClientDao extends AbstractDao{
 			}
 			return cp;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -79,23 +102,35 @@ public class ClientDao extends AbstractDao{
 	 * Fonction qui va récupérer la liste des contacts d'un client
 	 * en prenant en paramètre l'id du client
 	 */
-	private List<Personne> getContacts(int id){
+	public List<Personne> getContacts(int idClient){
+		PersonneDao pDao = new PersonneDao();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
 			List<Personne> personnes = new ArrayList<Personne>();
-			try(ResultSet rs = stmt.executeQuery("select idpersonne form appartient where idclient ="+id)){
+			try(ResultSet rs = stmt.executeQuery("select idpersonne from appartient where idclient ="+idClient)){
 				while(rs.next()) {
-					int idContact = rs.getInt("id");
-					try(ResultSet rs2 = stmt.executeQuery("select * form personne where id"+idContact)){
-						if(rs2.next()) {
-							Personne p = new Personne()
-						}
-					}
+					personnes.add(pDao.getPersonne(rs.getInt("idpersonne")));
 				}
 			}
 			return personnes;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public List<Materiel> getMateriels(int idClient){
+		MaterielDao mDao = new MaterielDao();
+		try(Connection connexion = MyDataSource.getSingleton().getConnection();
+			Statement stmt = connexion.createStatement()){
+			List<Materiel> materiels = new ArrayList<Materiel>();
+			try(ResultSet rs = stmt.executeQuery("select id from materiel where idclient ="+idClient)){
+				while(rs.next()) {
+					materiels.add(mDao.getMateriel(rs.getInt("id")));
+				}
+				return materiels;
+			}		
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

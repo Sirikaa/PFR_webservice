@@ -10,6 +10,14 @@ public class Materiel {
 	private TypeMateriel type;
 	private List<Interface> interfaces;
 	
+	public Materiel() {}
+	public Materiel(int id, String libelle, String serial, TypeMateriel type) {
+		this.setId(id);
+		this.setLibelle(libelle);
+		this.setSerial(serial);
+		this.setType(type);
+	}
+	
 	public int getId() {
 		return id;
 	}

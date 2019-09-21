@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cgi.udev.resoapi.model.Fonction;
 import com.cgi.udev.resoapi.model.Personne;
 
 /*
@@ -15,7 +16,7 @@ import com.cgi.udev.resoapi.model.Personne;
  * AbstractDao contient des méthodes utiles à tous les DAO
  */
 public class PersonneDao extends AbstractDao {
-	
+
 	/*
 	 * Méthode qui retourne la liste de toutes les personnes de la table personne
 	 */
@@ -25,23 +26,20 @@ public class PersonneDao extends AbstractDao {
 			List<Personne> personnes = new ArrayList<Personne>();
 			try(ResultSet rs = stmt.executeQuery("select * from personne")){
 				while(rs.next()) {
-					Personne p = new Personne(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("email"));
-					if(rs.getString("telephone") != null) {
-						p.setTelephone(rs.getString("telephone"));
-					}
+					Personne p = getPersonne(rs.getInt("id"));
 					personnes.add(p);
-				}
+					}
 			}
 			return personnes;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
 	/*
 	 * Méthode qui retourne une personne grâce à son paramètre id
 	 */
-	public Personne getPersonneById(int id){
+	public Personne getPersonne(int id){
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
 			Personne p = new Personne();
@@ -56,14 +54,18 @@ public class PersonneDao extends AbstractDao {
 			}
 			return p;
 		}catch(SQLException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
+	/*
+	 * Méthode pour insérer une personne dans la table personne
+	 * Prend une personne en argument
+	 */
 	public void create(Personne p){
 		String sql = "insert into personne (nom, prenom, telephone, email) values (?, ?, ?, ?)";
-		/*try (Connection connexion = MyDataSource.getSingleton().getConnection();){
-			boolean isTransactionOk = false;
+		boolean isTransactionOk = false;
+		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
 			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 				stmt.setString(1, p.getNom());
 				stmt.setString(2, p.getPrenom());
@@ -82,26 +84,24 @@ public class PersonneDao extends AbstractDao {
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-	}*/
-		try {
-			boolean transactionOk = false;
-			Connection connexion = MyDataSource.getSingleton().getConnection();
-			try (PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-				stmt.setString(1, p.getNom());
-				stmt.setString(2, p.getPrenom());
-				stmt.setString(3, p.getTelephone());
-				stmt.setString(4, p.getEmail());
-				stmt.executeUpdate();
-				try (ResultSet rs = stmt.getGeneratedKeys()) {
-					if (rs.next()) {
-						p.setId(rs.getInt(1));
-					}
+	}
+	
+	/*
+	 * Méthode pour récupérer la fonction d'une personne selon le client
+	 * car une personne peut travailler pour plusieurs clients
+	 */
+	public Fonction getFonctionForClient(Personne p, int idClient) {
+		FonctionDao fDao = new FonctionDao();
+		try(Connection connexion = MyDataSource.getSingleton().getConnection();
+				Statement stmt = connexion.createStatement()){
+			Fonction f = new Fonction();
+			try(ResultSet rs = stmt.executeQuery("select idfonction from appartient where idpersonne ="+p.getId()+" and idclient = "+idClient)){
+				if(rs.next()) {	
+					f = fDao.getFonction(rs.getInt("idfonction"));
 				}
-				transactionOk = true;
-			} finally {
-				checkTransactionAndClose(connexion, transactionOk);
 			}
-		} catch (SQLException e) {
+			return f;
+		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}

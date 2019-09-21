@@ -7,15 +7,14 @@ public class AdresseIp {
 	private String ipv6;
 	private String masque;
 	private TypeAffectation typeAffectation;
-	
+		
 	public AdresseIp() {
 		
 	}
-	public AdresseIp(int id, String ipv4, String masque, TypeAffectation typeAffectation) {
+	public AdresseIp(int id, String ipv4, String masque) {
 		this.setId(id);
 		this.setIpv4(ipv4);
 		this.setMasque(masque);
-		this.setTypeAffectation(typeAffectation);
 	}
 	public int getId() {
 		return id;

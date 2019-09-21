@@ -29,7 +29,7 @@ public class PersonneService {
 	 * throw InexistantException si la personne n'est pas trouvée en base
 	 */
 	public Personne getPersonneById(int id) throws InexistantException{
-	 Personne p = dao.getPersonneById(id);
+	 Personne p = dao.getPersonne(id);
 	 if(p.getId() != 0) {
 		 return p;
 	 }else {
@@ -38,14 +38,24 @@ public class PersonneService {
 		
 	}
 	
+	/*
+	 * Méthode pour créer une personne dans la table personne
+	 */
 	public void create(Personne personne) throws RequeteInvalideException, InexistantException{
-		if(isPersonneGood(personne)) {
-			dao.create(personne);
+		if(isPersonneExisting(personne)) {
+			if(isPersonneGood(personne)) {
+				dao.create(personne);
+			}else {
+				throw new RequeteInvalideException("Il manque un champ");
+			}
 		}else {
-			throw new RequeteInvalideException("Il manque un champ");
+			throw new InexistantException("Vous n'avez renseigné aucune personne à créer !");
 		}
 	}
 	
+	/*
+	 * Méthode qui vérifie que les champs obligatoire à la création d'une personne ont bien été renseignés
+	 */
 	private boolean isPersonneGood(Personne p){
 		boolean isGood = false;
 		if(p != null) {
@@ -58,6 +68,9 @@ public class PersonneService {
 		return isGood;
 	}
 	
+	/*
+	 * Méthode qui vérifie qu'un document JSON a bien été envoyé
+	 */
 	private boolean isPersonneExisting(Personne p) {
 		boolean isExisting = false;
 		if(p != null) {

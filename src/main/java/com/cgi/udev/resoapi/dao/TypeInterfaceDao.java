@@ -7,40 +7,40 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cgi.udev.resoapi.model.Fonction;
+import com.cgi.udev.resoapi.model.TypeInterface;
 
-public class FonctionDao extends AbstractDao{
+public class TypeInterfaceDao extends AbstractDao{
 
 	/*
 	 * Méthode pour récupérer la liste de tous les clients dans la table Client de la BDD
 	 */
-	public List<Fonction> getAll(){
+	public List<TypeInterface> getAll(){
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			List<Fonction> fonctions = new ArrayList<Fonction>();
-			try(ResultSet rs = stmt.executeQuery("select * from fonction")){
+			List<TypeInterface> tis = new ArrayList<TypeInterface>();
+			try(ResultSet rs = stmt.executeQuery("select * from typeif")){
 				while(rs.next()) {
-					Fonction f = new Fonction(rs.getInt("id"), rs.getString("libelle"));
-					fonctions.add(f);
+					TypeInterface ti = new TypeInterface(rs.getInt("id"), rs.getString("libelle"));
+					tis.add(ti);
 				}
 			}
-			return fonctions;
+			return tis;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public Fonction getFonction(int id){
+	public TypeInterface getTypeInterface(int id){
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			Fonction f = new Fonction();
-			try(ResultSet rs = stmt.executeQuery("select * from fonction where id ="+id)){
+			TypeInterface ti = new TypeInterface();
+			try(ResultSet rs = stmt.executeQuery("select * from typeif where id ="+id)){
 				if(rs.next()) {
-					f.setId(rs.getInt("id"));
-					f.setLibelle(rs.getString("libelle"));
+					ti.setId(rs.getInt("id"));
+					ti.setLibelle(rs.getString("libelle"));
 				}
 			}
-			return f;
+			return ti;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
