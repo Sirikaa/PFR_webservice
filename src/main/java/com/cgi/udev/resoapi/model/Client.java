@@ -2,8 +2,6 @@ package com.cgi.udev.resoapi.model;
 
 import java.util.List;
 
-import com.cgi.udev.resoapi.Ville;
-
 public class Client {
 
 	private int id;

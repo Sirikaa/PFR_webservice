@@ -1,4 +1,4 @@
-package com.cgi.udev.resoapi;
+package com.cgi.udev.resoapi.model;
 
 public class Ville {
 
