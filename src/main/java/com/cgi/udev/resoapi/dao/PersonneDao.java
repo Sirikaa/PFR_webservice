@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cgi.udev.resoapi.model.Fonction;
 import com.cgi.udev.resoapi.model.Personne;
 
 /*
@@ -21,41 +20,59 @@ public class PersonneDao extends AbstractDao {
 	 * Méthode qui retourne la liste de toutes les personnes de la table personne
 	 */
 	public List<Personne> getAll(){
+		List<Personne> personnes = new ArrayList<Personne>();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			List<Personne> personnes = new ArrayList<Personne>();
 			try(ResultSet rs = stmt.executeQuery("select * from personne")){
 				while(rs.next()) {
-					Personne p = getPersonne(rs.getInt("id"));
-					personnes.add(p);
+					personnes.add(buildPersonne(rs));
 					}
 			}
-			return personnes;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return personnes;
 	}
 	
 	/*
 	 * Méthode qui retourne une personne grâce à son paramètre id
 	 */
 	public Personne getPersonne(int id){
+		Personne p = new Personne();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			Personne p = new Personne();
 			try(ResultSet rs = stmt.executeQuery("select * from personne where id ="+id)){
-				while(rs.next()) {
-					p.setId(rs.getInt("id"));
-					p.setNom(rs.getString("nom"));
-					p.setPrenom(rs.getString("prenom"));
-					p.setTelephone(rs.getString("telephone"));
-					p.setEmail(rs.getString("email"));
+				if(rs.next()) {
+					p = buildPersonne(rs);
 				}
 			}
-			return p;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return p;
+	}
+	
+	/*
+	 * Méthode qui retourne la liste de tous les contacts d'un client
+	 */
+	public List<Personne> getPersonnesOfClient(int idClient){
+		List<Personne> personnes = new ArrayList<Personne>();
+		try(Connection connexion = MyDataSource.getSingleton().getConnection();
+				Statement stmt = connexion.createStatement()){
+			try(ResultSet rs = stmt.executeQuery("select * from personne p " + 
+												 "left join appartient a " + 
+												 "on p.id = a.idpersonne " + 
+												 "left join client c " + 
+												 "on c.id = a.idclient " + 
+												 "where idclient = 2")){
+				while(rs.next()) {
+					personnes.add(buildPersonne(rs));
+				}
+			}
+		}catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return personnes;
 	}
 	
 	/*
@@ -86,23 +103,7 @@ public class PersonneDao extends AbstractDao {
 		}
 	}
 	
-	/*
-	 * Méthode pour récupérer la fonction d'une personne selon le client
-	 * car une personne peut travailler pour plusieurs clients
-	 */
-	public Fonction getFonctionForClient(Personne p, int idClient) {
-		FonctionDao fDao = new FonctionDao();
-		try(Connection connexion = MyDataSource.getSingleton().getConnection();
-				Statement stmt = connexion.createStatement()){
-			Fonction f = new Fonction();
-			try(ResultSet rs = stmt.executeQuery("select idfonction from appartient where idpersonne ="+p.getId()+" and idclient = "+idClient)){
-				if(rs.next()) {	
-					f = fDao.getFonction(rs.getInt("idfonction"));
-				}
-			}
-			return f;
-		}catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
+	private Personne buildPersonne(ResultSet rs) throws SQLException{
+		return new Personne(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("email"), rs.getString("telephone"));
 	}
 }

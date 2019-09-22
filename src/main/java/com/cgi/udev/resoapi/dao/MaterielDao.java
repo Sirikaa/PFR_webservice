@@ -7,80 +7,67 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cgi.udev.resoapi.model.Interface;
 import com.cgi.udev.resoapi.model.Materiel;
-import com.cgi.udev.resoapi.model.TypeMateriel;
 
 public class MaterielDao extends AbstractDao{
 
 	/*
-	 * Méthode pour récupérer la liste de tous les materiels dans la table Materiel de la BDD
+	 * Méthode pour récupérer la liste de tous les matériels dans la table Materiel de la BDD
 	 */
 	public List<Materiel> getAll(){
+		List<Materiel> materiels = new ArrayList<Materiel>();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			List<Materiel> materiels = new ArrayList<Materiel>();
 			try(ResultSet rs = stmt.executeQuery("select * from materiel")){
 				while(rs.next()) {
-					Materiel m = getMateriel(rs.getInt("id"));
-					materiels.add(m);
+					materiels.add(buildMateriel(rs));
 				}
 			}
-			return materiels;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return materiels;
 	}
 	
 	public Materiel getMateriel(int id){
+		Materiel m = new Materiel();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			Materiel m = new Materiel();
 			try(ResultSet rs = stmt.executeQuery("select * from materiel where id ="+id)){
 				if(rs.next()) {
-					m.setId(rs.getInt("id"));
-					m.setLibelle(rs.getString("libelle"));
-					m.setSerial(rs.getString("numserie"));
-					m.setType(getTypeMateriel(rs.getInt("idtype")));
-					m.setInterfaces(getInterfaces(rs.getInt("id")));
+					m = buildMateriel(rs);
 				}
 			}
-			return m;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return m;
 	}
 	
-	public TypeMateriel getTypeMateriel(int idMateriel) {
-		TypeMaterielDao tmDao = new TypeMaterielDao();
+	/*
+	 * Méthode qui retourne la liste de tous les contacts d'un client
+	 */
+	public List<Materiel> getMaterielsOfClient(int idClient){
+		List<Materiel> materiels = new ArrayList<Materiel>();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-		TypeMateriel tm = new TypeMateriel();
-			try(ResultSet rs = stmt.executeQuery("select idtype from materiel where id ="+idMateriel)){
-				if(rs.next()) {
-					tm = tmDao.getTypeMateriel(rs.getInt("idtype"));
+			try(ResultSet rs = stmt.executeQuery("select * from materiel where idclient ="+idClient)){
+				while(rs.next()) {
+					materiels.add(buildMateriel(rs));
 				}
-				return tm;
 			}
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return materiels;
 	}
 	
-	public List<Interface> getInterfaces(int idMateriel) {
+	private Materiel buildMateriel (ResultSet rs) throws SQLException{
+		TypeMaterielDao tmDao = new TypeMaterielDao();
 		InterfaceDao iDao = new InterfaceDao();
-		try(Connection connexion = MyDataSource.getSingleton().getConnection();
-			Statement stmt = connexion.createStatement()){
-			List<Interface> interfaces = new ArrayList<Interface>();
-			try(ResultSet rs = stmt.executeQuery("select id from interface where idmateriel ="+idMateriel)){
-				while(rs.next()) {
-					Interface i = iDao.getInterface(rs.getInt("id"));
-					interfaces.add(i);
-				}
-				return interfaces;
-			}		
-		}catch(SQLException e) {
-			throw new RuntimeException(e);
-		}
+		Materiel  m =  new Materiel(rs.getInt("id"), rs.getString("libelle"), rs.getString("numserie"));
+		m.setType(tmDao.getTypeMaterielOfMateriel(rs.getInt("id")));
+		m.setInterfaces(iDao.getInterfacesOfMateriel(rs.getInt("id")));
+		return m;
 	}
 }

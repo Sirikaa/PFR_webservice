@@ -1,20 +1,22 @@
 package com.cgi.udev.resoapi.model;
 
+import java.util.List;
+
 public class Interface {
 
 	private int id;
 	private String nom;
 	private String mac;
 	private TypeInterface type;
-	private AdresseIp adresseIp;
+	private List<AdresseIp> adressesIp;
 	
 	public Interface() {
 		
 	}
-	public Interface(int id, String nom, TypeInterface type) {
+	public Interface(int id, String nom, String mac) {
 		this.setId(id);
 		this.setNom(nom);
-		this.setType(type);
+		this.setMac(mac);
 	}
 	
 	public int getId() {
@@ -41,12 +43,10 @@ public class Interface {
 	public void setType(TypeInterface type) {
 		this.type = type;
 	}
-
-	public AdresseIp getAdresseIp() {
-		return adresseIp;
+	public List<AdresseIp> getAdressesIp() {
+		return adressesIp;
 	}
-
-	public void setAdresseIp(AdresseIp adresseIp) {
-		this.adresseIp = adresseIp;
+	public void setAdressesIp(List<AdresseIp> adressesIp) {
+		this.adressesIp = adressesIp;
 	}
 }

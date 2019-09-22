@@ -3,11 +3,13 @@ package com.cgi.udev.resoapi.model.services;
 import java.util.List;
 
 import com.cgi.udev.resoapi.dao.ClientDao;
+import com.cgi.udev.resoapi.dao.PersonneDao;
 import com.cgi.udev.resoapi.model.Client;
 import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
+import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
 
-public class ClientService {
+public class ClientService extends AbstractService{
 
 	private ClientDao dao = new ClientDao();
 	
@@ -34,11 +36,42 @@ public class ClientService {
 	}
 	
 	public List<Personne> getContacts(int id) throws InexistantException{
-		List<Personne> liste = dao.getContacts(id);
+		PersonneDao pDao = new PersonneDao();
+		List<Personne> liste = pDao.getPersonnesOfClient(id);
 		if(!liste.isEmpty()) {
 			return liste;
 		}else {
-			throw new InexistantException("Aucun contacts à afficher !");
+			throw new InexistantException("Aucun contacts à afficher pour ce client!");
 		}
+	}
+	
+	/*
+	 * Méthode pour créer un client dans la table client
+	 */
+	public void create(Client c) throws RequeteInvalideException, InexistantException{
+		if(isExisting(c)) {
+			if(areFieldsFilled(c)) {
+				dao.create(c);
+			}else {
+				throw new RequeteInvalideException("Il manque un champ");
+			}
+		}else {
+			throw new InexistantException("Vous n'avez renseigné aucun client à créer !");
+		}
+	}
+	
+	/*
+	 * Méthode qui vérifie que les champs obligatoires à la création d'un client ont bien été renseignés
+	 */
+	private boolean areFieldsFilled(Client c){
+		boolean isGood = false;
+		if(c != null) {
+			if(c.getNom() != null && c.getMatricule() != null && c.getPassword() != null) {
+				isGood = true;
+			}else {
+				isGood = false;
+			}
+		}
+		return isGood;
 	}
 }

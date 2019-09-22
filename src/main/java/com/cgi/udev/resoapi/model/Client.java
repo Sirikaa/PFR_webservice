@@ -2,6 +2,8 @@ package com.cgi.udev.resoapi.model;
 
 import java.util.List;
 
+import com.cgi.udev.resoapi.Ville;
+
 public class Client {
 
 	private int id;
@@ -10,8 +12,7 @@ public class Client {
 	private String password;
 	private String adresse1;
 	private String adresse2;
-	private String cp;
-	private String ville;
+	private Ville ville;
 	private List<Personne> contacts;
 	private List<Materiel> materiels;
 	
@@ -25,6 +26,17 @@ public class Client {
 		this.setPassword(password);
 		this.setAdresse1(adresse1);
 		this.setAdresse2(adresse2);
+	}
+	public Client(int id, String nom, String matricule, String password, String adresse1, String adresse2, Ville ville, List<Personne> personnes, List<Materiel> materiels) {
+		this.setId(id);
+		this.setNom(nom);
+		this.setMatricule(matricule);
+		this.setPassword(password);
+		this.setAdresse1(adresse1);
+		this.setAdresse2(adresse2);
+		this.setVille(ville);
+		this.setContacts(personnes);
+		this.setMateriels(materiels);
 	}
 	
 	public int getId() {
@@ -51,18 +63,6 @@ public class Client {
 	public void setAdresse2(String adresse2) {
 		this.adresse2 = adresse2;
 	}
-	public String getCp() {
-		return cp;
-	}
-	public void setCp(String cp) {
-		this.cp = cp;
-	}
-	public String getVille() {
-		return ville;
-	}
-	public void setVille(String ville) {
-		this.ville = ville;
-	}
 	public List<Personne> getContacts() {
 		return contacts;
 	}
@@ -86,5 +86,11 @@ public class Client {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public Ville getVille() {
+		return ville;
+	}
+	public void setVille(Ville ville) {
+		this.ville = ville;
 	}
 }

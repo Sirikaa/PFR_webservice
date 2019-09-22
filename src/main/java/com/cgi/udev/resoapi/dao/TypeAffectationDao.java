@@ -15,19 +15,19 @@ public class TypeAffectationDao extends AbstractDao{
 	 * Méthode pour récupérer la liste de tous les clients dans la table Client de la BDD
 	 */
 	public List<TypeAffectation> getAll(){
+		List<TypeAffectation> tas = new ArrayList<TypeAffectation>();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
-			List<TypeAffectation> tas = new ArrayList<TypeAffectation>();
 			try(ResultSet rs = stmt.executeQuery("select * from typeaffectation")){
 				while(rs.next()) {
 					TypeAffectation ta = new TypeAffectation(rs.getInt("id"), rs.getString("libelle"));
 					tas.add(ta);
 				}
 			}
-			return tas;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return tas;
 	}
 	
 	public TypeAffectation getTypeAffectation(int id){

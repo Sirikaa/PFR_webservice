@@ -43,7 +43,7 @@ public class PersonneService {
 	 */
 	public void create(Personne personne) throws RequeteInvalideException, InexistantException{
 		if(isPersonneExisting(personne)) {
-			if(isPersonneGood(personne)) {
+			if(areFieldsFilled(personne)) {
 				dao.create(personne);
 			}else {
 				throw new RequeteInvalideException("Il manque un champ");
@@ -54,9 +54,9 @@ public class PersonneService {
 	}
 	
 	/*
-	 * Méthode qui vérifie que les champs obligatoire à la création d'une personne ont bien été renseignés
+	 * Méthode qui vérifie que les champs obligatoires à la création d'une personne ont bien été renseignés
 	 */
-	private boolean isPersonneGood(Personne p){
+	private boolean areFieldsFilled(Personne p){
 		boolean isGood = false;
 		if(p != null) {
 			if(p.getNom() != null && p.getPrenom() != null && p.getEmail() != null) {
