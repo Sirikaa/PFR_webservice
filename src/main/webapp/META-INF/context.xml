@@ -4,7 +4,7 @@
 	          type="javax.sql.DataSource"
 	          username="root"
 	          password="root"
-	          url="jdbc:mysql://localhost:3306/netgest?serverTimezone=GMT"
+	          url="jdbc:mysql://localhost:3306/netgest?allowMultiQueries=true&amp;serverTimezone=GMT"
 	          driverClassName="com.mysql.cj.jdbc.Driver" />
 </Context>
 

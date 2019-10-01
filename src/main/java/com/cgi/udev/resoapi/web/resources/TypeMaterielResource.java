@@ -11,30 +11,30 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.cgi.udev.resoapi.model.Personne;
+import com.cgi.udev.resoapi.model.TypeMateriel;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
 import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
-import com.cgi.udev.resoapi.model.services.PersonneService;
+import com.cgi.udev.resoapi.model.services.TypeMaterielService;
 
-@Path("/personne/{id}")
-public class PersonneResource {
-	PersonneService pServ = new PersonneService();
+@Path("/typemateriel/{id}")
+public class TypeMaterielResource {
+	TypeMaterielService tmServ = new TypeMaterielService();
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Personne get(@PathParam("id") int id) throws SQLException, InexistantException{
-		return pServ.getPersonne(id);
+	public TypeMateriel get(@PathParam("id") int id) throws SQLException, InexistantException{
+		return tmServ.getTypeMateriel(id);
 	}
 	
 	@DELETE
 	public void delete(@PathParam("id") int id) throws InexistantException{
-		pServ.delete(id);
+		tmServ.delete(id);
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void update(@PathParam("id") int id, Personne p) throws RequeteInvalideException, InexistantException{
-		p.setId(id);
-		pServ.update(p);
+	public void update(@PathParam("id") int id, TypeMateriel tm) throws RequeteInvalideException, InexistantException{
+		tm.setId(id);
+		tmServ.update(tm);
 	}
 }

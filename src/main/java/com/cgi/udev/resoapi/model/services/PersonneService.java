@@ -7,7 +7,7 @@ import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
 import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
 
-public class PersonneService {
+public class PersonneService extends AbstractService{
 	
 	private PersonneDao dao = new PersonneDao();
 	
@@ -28,7 +28,7 @@ public class PersonneService {
 	 * Retourne une personne en fonction du paramètre id
 	 * throw InexistantException si la personne n'est pas trouvée en base
 	 */
-	public Personne getPersonneById(int id) throws InexistantException{
+	public Personne getPersonne(int id) throws InexistantException{
 	 Personne p = dao.getPersonne(id);
 	 if(p.getId() != 0) {
 		 return p;
@@ -42,7 +42,7 @@ public class PersonneService {
 	 * Méthode pour créer une personne dans la table personne
 	 */
 	public void create(Personne personne) throws RequeteInvalideException, InexistantException{
-		if(isPersonneExisting(personne)) {
+		if(isExisting(personne)) {
 			if(areFieldsFilled(personne)) {
 				dao.create(personne);
 			}else {
@@ -50,6 +50,32 @@ public class PersonneService {
 			}
 		}else {
 			throw new InexistantException("Vous n'avez renseigné aucune personne à créer !");
+		}
+	}
+	
+	/*
+	 * Méthode pour mettre à jour une personne dans la table personne
+	 */
+	public void update(Personne p) throws RequeteInvalideException, InexistantException{
+		if(isExisting(p)) {
+			if(areFieldsFilled(p)) {
+				if(!dao.update(p)) {
+					throw new InexistantException("La personne n'existe pas en base !");
+				}
+			}else {
+				throw new RequeteInvalideException("Il manque un champ");
+			}
+		}else {
+			throw new InexistantException("Vous n'avez renseigné aucune personne à mettre à jour !");
+		}
+	}
+	
+	/*
+	 * Méthode pour supprimer une personne dans la table personne
+	 */
+	public void delete(int id) throws InexistantException{
+		if(!dao.delete(id)) {
+			throw new InexistantException("La personne n'existe pas en base !");
 		}
 	}
 	
@@ -66,19 +92,6 @@ public class PersonneService {
 			}
 		}
 		return isGood;
-	}
-	
-	/*
-	 * Méthode qui vérifie qu'un document JSON a bien été envoyé
-	 */
-	private boolean isPersonneExisting(Personne p) {
-		boolean isExisting = false;
-		if(p != null) {
-			isExisting = true;
-		}else {
-			isExisting = false;
-		}
-		return isExisting;
 	}
 
 }

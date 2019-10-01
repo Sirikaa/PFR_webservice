@@ -17,14 +17,6 @@ public class Client {
 	public Client() {
 		
 	}
-	public Client(int id, String nom, String matricule, String password, String adresse1, String adresse2) {
-		this.setId(id);
-		this.setNom(nom);
-		this.setMatricule(matricule);
-		this.setPassword(password);
-		this.setAdresse1(adresse1);
-		this.setAdresse2(adresse2);
-	}
 	public Client(int id, String nom, String matricule, String password, String adresse1, String adresse2, Ville ville, List<Personne> personnes, List<Materiel> materiels) {
 		this.setId(id);
 		this.setNom(nom);

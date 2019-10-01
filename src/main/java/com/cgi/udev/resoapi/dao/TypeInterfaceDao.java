@@ -1,6 +1,7 @@
 package com.cgi.udev.resoapi.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,7 +36,7 @@ public class TypeInterfaceDao extends AbstractDao{
 				Statement stmt = connexion.createStatement()){
 			try(ResultSet rs = stmt.executeQuery("select * from typeif where id ="+id)){
 				if(rs.next()) {
-					buildTypeInterface(rs);
+					ti = buildTypeInterface(rs);
 				}
 			}
 		}catch(SQLException e) {
@@ -68,5 +69,80 @@ public class TypeInterfaceDao extends AbstractDao{
 	
 	private TypeInterface buildTypeInterface(ResultSet rs) throws SQLException{
 		return new TypeInterface(rs.getInt("id"), rs.getString("libelle")); 
+	}
+	
+	/*
+	 * Méthode pour insérer un type d'inteface dans la table typeif
+	 * Prend un type d'interface en argument
+	 */
+	public void create(TypeInterface ti){
+		String sql = "insert into typeif (libelle) values (?)";
+		boolean isTransactionOk = false;
+		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
+			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+				stmt.setString(1, ti.getLibelle());
+				stmt.executeUpdate();
+				try(ResultSet rs = stmt.getGeneratedKeys()){
+					if(rs.next()) {
+						ti.setId(rs.getInt(1));
+					}
+				}
+				isTransactionOk = true;
+			}finally {
+				checkTransactionAndClose(connexion, isTransactionOk);
+			}
+		}catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public boolean update(TypeInterface ti) {
+		String sql = "update typeif set libelle = ? where id = ?";
+		boolean isTransactionOk = false;
+		boolean haveWeUpdateSomething = false;
+		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
+			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+				stmt.setString(1, ti.getLibelle());
+				stmt.setInt(2, ti.getId());
+				if(stmt.executeUpdate() > 0) {
+					haveWeUpdateSomething = true;
+				}else {
+					haveWeUpdateSomething = false;
+				}
+				isTransactionOk = true;
+			}finally {
+				checkTransactionAndClose(connexion, isTransactionOk);
+			}
+		}catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return haveWeUpdateSomething;
+	}
+	
+	/*
+	 * Méthode pour supprimer un type d'interface de la table typeif
+	 * Prend un type d'interface en paramètre
+	 */
+	// Créer le delete sur les tables en lien avec personne, avec des clés étrangères puis y faire appel.
+	public boolean delete(int id) {
+		String sql = "delete from typeif where id = ?";
+		boolean isTransactionOk = false;
+		boolean haveWeDeleteSomething;
+		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
+			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
+				stmt.setInt(1, id);
+				if(stmt.executeUpdate() > 0) {
+					haveWeDeleteSomething = true;
+				}else {
+					haveWeDeleteSomething = false;
+				}
+				isTransactionOk = true;
+			}finally {
+				checkTransactionAndClose(connexion, isTransactionOk);
+			}
+		}catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return haveWeDeleteSomething;
 	}
 }

@@ -1,14 +1,11 @@
 package com.cgi.udev.resoapi.model;
 
-import java.util.List;
-
 public class Personne {
 	private int id;
 	private String nom;
 	private String prenom;
 	private String telephone;
 	private String email;
-	private List<Fonction> fonctions;
 	
 	public Personne() {
 		
@@ -50,12 +47,4 @@ public class Personne {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public List<Fonction> getFonctions() {
-		return fonctions;
-	}
-	public void setFonctions(List<Fonction> fonctions) {
-		this.fonctions = fonctions;
-	}
-
-	
 }

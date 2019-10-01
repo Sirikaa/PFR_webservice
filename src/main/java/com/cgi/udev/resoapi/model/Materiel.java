@@ -16,11 +16,12 @@ public class Materiel {
 		this.setLibelle(libelle);
 		this.setSerial(serial);
 	}
-	public Materiel(int id, String libelle, String serial, TypeMateriel type) {
+	public Materiel(int id, String libelle, String serial, TypeMateriel type, List<Interface> interfaces) {
 		this.setId(id);
 		this.setLibelle(libelle);
 		this.setSerial(serial);
 		this.setType(type);
+		this.setInterfaces(interfaces);
 	}
 	
 	public int getId() {
@@ -53,6 +54,4 @@ public class Materiel {
 	public void setInterfaces(List<Interface> interfaces) {
 		this.interfaces = interfaces;
 	}
-	
-	
 }

@@ -13,10 +13,12 @@ public class Interface {
 	public Interface() {
 		
 	}
-	public Interface(int id, String nom, String mac) {
+	public Interface(int id, String nom, String mac, TypeInterface type, List<AdresseIp> adressesIp) {
 		this.setId(id);
 		this.setNom(nom);
 		this.setMac(mac);
+		this.setType(type);
+		this.setAdressesIp(adressesIp);
 	}
 	
 	public int getId() {

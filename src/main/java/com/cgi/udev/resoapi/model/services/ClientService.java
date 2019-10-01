@@ -8,6 +8,7 @@ import com.cgi.udev.resoapi.model.Client;
 import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
 import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
+import com.cgi.udev.resoapi.model.exceptions.UserNotFoundException;
 
 public class ClientService extends AbstractService{
 
@@ -58,6 +59,44 @@ public class ClientService extends AbstractService{
 		}else {
 			throw new InexistantException("Vous n'avez renseigné aucun client à créer !");
 		}
+	}
+	
+	/*
+	 * Méthode pour mettre à jour un client dans la table client
+	 */
+	public void update(Client c) throws RequeteInvalideException, InexistantException{
+		if(isExisting(c)) {
+			if(areFieldsFilled(c)) {
+				if(!dao.update(c)) {
+					throw new InexistantException("Le client n'existe pas en base !");
+				}
+			}else {
+				throw new RequeteInvalideException("Il manque un champ");
+			}
+		}else {
+			throw new InexistantException("Vous n'avez renseigné aucun client à mettre à jour !");
+		}
+	}
+	
+	/*
+	 * Méthode pour supprimer un client dans la table client
+	 */
+	public void delete(int id) throws InexistantException{
+		if(!dao.delete(id)) {
+			throw new InexistantException("Le client n'existe pas en base !");
+		}
+	}
+	
+	/*
+	 * Méthode qui vérifie que l'authentification retourne quelque chose
+	 */
+	public Client login(String matricule, String password) throws InexistantException{
+		 Client c = dao.login(matricule, password);
+		 if(c.getId() != 0) {
+			 return c;
+		 }else {
+			 throw new InexistantException("Login ou mot de passe incorrect");
+		 }	
 	}
 	
 	/*
