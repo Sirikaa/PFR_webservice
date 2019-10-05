@@ -133,21 +133,12 @@ public class ClientDao extends AbstractDao{
 	 * Prend un client en paramètre
 	 */
 	public boolean delete(int id) {
-		String deleteIp = "delete from adresseip where idinterface in (select id from interface where idmateriel in (select id from materiel where idclient = ?));";
-		String deleteInterface = "delete from interface where idmateriel in (select id from materiel where idclient = ?);";
-		String deleteMateriel = "delete from materiel where idclient = ?;";
-		String deleteAppartient = "delete from appartient where idclient = ?;";
-		String deleteClient = "delete from client where id = ?";
-		String sql = deleteIp+deleteInterface+deleteMateriel+deleteAppartient+deleteClient;
+		String sql = "delete from client where id = ?";
 		boolean isTransactionOk = false;
 		boolean haveWeDeleteSomething;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
 			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
 				stmt.setInt(1, id);
-				stmt.setInt(2, id);
-				stmt.setInt(3, id);
-				stmt.setInt(4, id);
-				stmt.setInt(5, id);
 				if(stmt.executeUpdate() > 0) {
 					haveWeDeleteSomething = true;
 				}else {

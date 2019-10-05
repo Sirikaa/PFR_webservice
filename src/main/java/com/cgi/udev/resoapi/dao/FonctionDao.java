@@ -49,8 +49,8 @@ public class FonctionDao extends AbstractDao{
 	 * car une personne peut travailler pour plusieurs clients
 	 * Prend en paramètre l'id de la personne et l'id du client.
 	 */
-	public Fonction getFonctionOfPersonneForClient(int idPersonne, int idClient) {
-		Fonction f = new Fonction();
+	public List<Fonction> getFonctionsOfPersonneForClient(int idPersonne, int idClient) {
+		List<Fonction> fonctions = new ArrayList<>();
 		try(Connection connexion = MyDataSource.getSingleton().getConnection();
 				Statement stmt = connexion.createStatement()){
 			try(ResultSet rs = stmt.executeQuery("select * from fonction f "
@@ -58,13 +58,13 @@ public class FonctionDao extends AbstractDao{
 												+ "on f.id = a.idfonction "
 												+ "where idclient ="+idClient+" and idpersonne = "+idPersonne)){
 				if(rs.next()) {	
-					f = buildFonction(rs);
+					fonctions.add(buildFonction(rs));
 				}
 			}
-			return f;
 		}catch(SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return fonctions;
 	}
 	
 	private Fonction buildFonction(ResultSet rs) throws SQLException{

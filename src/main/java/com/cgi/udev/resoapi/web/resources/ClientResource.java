@@ -17,10 +17,12 @@ import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
 import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
 import com.cgi.udev.resoapi.model.services.ClientService;
+import com.cgi.udev.resoapi.model.services.PersonneService;
 
 @Path("/client/{id}")
 public class ClientResource {
 	ClientService cServ = new ClientService();
+	PersonneService pServ = new PersonneService();
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +47,13 @@ public class ClientResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Personne> getContacts(@PathParam("id") int id) throws SQLException, InexistantException {
+		return cServ.getContacts(id);
+	}
+	
+	@Path("/personne/{id}/fonctions")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Personne> getFonctions(@PathParam("id") int id) throws SQLException, InexistantException {
 		return cServ.getContacts(id);
 	}
 }

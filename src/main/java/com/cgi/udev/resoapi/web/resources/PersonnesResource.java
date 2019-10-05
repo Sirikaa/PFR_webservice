@@ -32,7 +32,6 @@ public class PersonnesResource {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	//Pour afficher ce qui a été créé
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response create(Personne p, @Context UriInfo uriInfo) throws RequeteInvalideException, InexistantException {
 		pServ.create(p);

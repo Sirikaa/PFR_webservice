@@ -32,5 +32,14 @@ private FonctionDao dao = new FonctionDao();
 			throw new InexistantException("Cette fonction n'existe pas !");
 		}
 	}
+	
+	public List<Fonction> getFonctionsOfPersonneForClient(int idClient, int idPersonne) throws InexistantException{
+		List<Fonction> liste = dao.getFonctionsOfPersonneForClient(idPersonne, idClient);
+		if(!liste.isEmpty()) {
+			return liste;
+		}else {
+			throw new InexistantException("Il semble que cette personne n'ait pas défini de fonction");
+		}
+	}
 
 }

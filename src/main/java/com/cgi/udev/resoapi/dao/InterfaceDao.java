@@ -132,13 +132,12 @@ public class InterfaceDao extends AbstractDao{
 	 * @params l'id de l'interface
 	 */
 	public boolean delete(int id) {
-		String sql = "delete from adresseip where idinterface = ?;delete from interface where id = ?";
+		String sql = "delete from interface where id = ?";
 		boolean isTransactionOk = false;
 		boolean haveWeDeleteSomething;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
 			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
 				stmt.setInt(1, id);
-				stmt.setInt(2, id);
 				if(stmt.executeUpdate() > 0) {
 					haveWeDeleteSomething = true;
 				}else {

@@ -128,14 +128,12 @@ public class MaterielDao extends AbstractDao{
 	 * Prend l'id du matériel en paramètre
 	 */
 	public boolean delete(int id) {
-		String sql = "delete from adresseip where idinterface in (select id from interface where idmateriel = ?);delete from interface where idmateriel = ?;delete from materiel where id = ?";
+		String sql = "delete from materiel where id = ?";
 		boolean isTransactionOk = false;
 		boolean haveWeDeleteSomething;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
 			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
 				stmt.setInt(1, id);
-				stmt.setInt(2, id);
-				stmt.setInt(3, id);
 				if(stmt.executeUpdate() > 0) {
 					haveWeDeleteSomething = true;
 				}else {

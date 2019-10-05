@@ -8,7 +8,6 @@ import com.cgi.udev.resoapi.model.Client;
 import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
 import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
-import com.cgi.udev.resoapi.model.exceptions.UserNotFoundException;
 
 public class ClientService extends AbstractService{
 

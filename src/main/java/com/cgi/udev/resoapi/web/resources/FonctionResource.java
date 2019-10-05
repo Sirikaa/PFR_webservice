@@ -30,4 +30,11 @@ FonctionService fServ = new FonctionService();
 	public Fonction get(@PathParam("id") int id) throws SQLException, InexistantException {
 		return fServ.getFonction(id);
 	}
+	
+	@Path("/client/{idClient}/personne/{idPersonne}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Fonction> get(@PathParam("idClient") int idClient, @PathParam("idPersonne") int idPersonne) throws SQLException, InexistantException {
+		return fServ.getFonctionsOfPersonneForClient(idClient, idPersonne);
+	}
 }

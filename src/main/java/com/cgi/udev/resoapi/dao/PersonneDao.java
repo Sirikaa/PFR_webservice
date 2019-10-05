@@ -133,7 +133,7 @@ public class PersonneDao extends AbstractDao {
 	 * Prend une personne en paramètre
 	 */
 	public boolean delete(int id) {
-		String sql = "delete from appartient where idpersonne = ?;delete from personne where id = ?";
+		String sql = "delete from personne where id = ?";
 		boolean isTransactionOk = false;
 		boolean haveWeDeleteSomething;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){

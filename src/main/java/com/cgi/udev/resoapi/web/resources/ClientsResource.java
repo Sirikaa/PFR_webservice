@@ -1,5 +1,6 @@
 package com.cgi.udev.resoapi.web.resources;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,7 +9,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import com.cgi.udev.resoapi.model.Client;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
@@ -29,7 +33,11 @@ ClientService cServ = new ClientService();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public void create(Client c) throws RequeteInvalideException, InexistantException {
+	public Response create(Client c, @Context UriInfo uriInfo) throws RequeteInvalideException, InexistantException {
 		cServ.create(c);
+		URI uri = uriInfo.getRequestUriBuilder().build();
+		return Response.created(uri)
+				       .entity(c)
+				       .build();
 	}
 }
