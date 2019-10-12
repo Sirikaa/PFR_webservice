@@ -10,6 +10,7 @@ import com.cgi.udev.resoapi.model.exceptions.RequeteInvalideException;
 public class PersonneService extends AbstractService{
 	
 	private PersonneDao dao = new PersonneDao();
+	private String error = "";
 	
 	/*
 	 * Retourne la liste des personnes de la table Personne
@@ -41,12 +42,16 @@ public class PersonneService extends AbstractService{
 	/*
 	 * Méthode pour créer une personne dans la table personne
 	 */
-	public void create(Personne personne) throws RequeteInvalideException, InexistantException{
-		if(isExisting(personne)) {
-			if(areFieldsFilled(personne)) {
-				dao.create(personne);
+	public void create(Personne p, int idClient) throws RequeteInvalideException, InexistantException{
+		if(isExisting(p)) {
+			if(idClient != 0) {
+				if(areFieldsFilled(p)) {
+					dao.create(p, idClient);
+				}else {
+					throw new RequeteInvalideException(this.error);
+				}
 			}else {
-				throw new RequeteInvalideException("Il manque un champ");
+				throw new InexistantException("Vous n'avez renseigné aucun client !");
 			}
 		}else {
 			throw new InexistantException("Vous n'avez renseigné aucune personne à créer !");
@@ -60,10 +65,10 @@ public class PersonneService extends AbstractService{
 		if(isExisting(p)) {
 			if(areFieldsFilled(p)) {
 				if(!dao.update(p)) {
-					throw new InexistantException("La personne n'existe pas en base !");
+					throw new InexistantException("Erreur lors de la mise à jour !");
 				}
 			}else {
-				throw new RequeteInvalideException("Il manque un champ");
+				throw new RequeteInvalideException(this.error);
 			}
 		}else {
 			throw new InexistantException("Vous n'avez renseigné aucune personne à mettre à jour !");
@@ -85,9 +90,18 @@ public class PersonneService extends AbstractService{
 	private boolean areFieldsFilled(Personne p){
 		boolean isGood = false;
 		if(p != null) {
-			if(p.getNom() != null && p.getPrenom() != null && p.getEmail() != null) {
+			if(p.getNom() != null && p.getPrenom() != null && p.getEmail() != null && p.getFonction() != null) {
 				isGood = true;
 			}else {
+				if(p.getNom() == null) {
+					this.error = "Merci de renseigner le nom";
+				}else if( p.getPrenom() == null) {
+					this.error = "Merci de renseigner le prénom";
+				}else if(p.getEmail() == null) {
+					this.error = "Merci de renseigner l'e-mail";
+				}else if(p.getFonction() == null) {
+					this.error = "Merci de renseigner la fonction";
+				}
 				isGood = false;
 			}
 		}

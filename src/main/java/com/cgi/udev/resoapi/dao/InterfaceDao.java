@@ -77,7 +77,7 @@ public class InterfaceDao extends AbstractDao{
 	 * Méthode pour insérer une interface dans la table interface
 	 * Prend une interface en argument et l'id du client
 	 */
-	public void create(Interface i, int idMateriel){
+	public boolean create(Interface i, int idMateriel){
 		String sql = "insert into interface (nom, mac, idtype, idmateriel) values (?, ?, ?, ?)";
 		boolean isTransactionOk = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
@@ -90,15 +90,16 @@ public class InterfaceDao extends AbstractDao{
 				try(ResultSet rs = stmt.getGeneratedKeys()){
 					if(rs.next()) {
 						i.setId(rs.getInt(1));
+						isTransactionOk = true;
 					}
 				}
-				isTransactionOk = true;
 			}finally {
 				checkTransactionAndClose(connexion, isTransactionOk);
 			}
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return isTransactionOk;
 	}
 	
 	public boolean update(Interface i, int idMateriel) {

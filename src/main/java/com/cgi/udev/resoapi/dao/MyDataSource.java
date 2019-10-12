@@ -36,7 +36,8 @@ public class MyDataSource {
 	}
 
 	public Connection getConnection() throws SQLException {
-		return dataSource.getConnection();
+		Connection conn = dataSource.getConnection();
+		return conn;
 	}
 
 }

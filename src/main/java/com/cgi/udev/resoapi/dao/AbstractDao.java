@@ -24,5 +24,4 @@ public abstract class AbstractDao {
 			throw new RuntimeException(e);
 		}
 	}
-	
 }

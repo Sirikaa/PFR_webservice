@@ -33,10 +33,10 @@ private FonctionDao dao = new FonctionDao();
 		}
 	}
 	
-	public List<Fonction> getFonctionsOfPersonneForClient(int idClient, int idPersonne) throws InexistantException{
-		List<Fonction> liste = dao.getFonctionsOfPersonneForClient(idPersonne, idClient);
-		if(!liste.isEmpty()) {
-			return liste;
+	public Fonction getFonctionOfPersonneForClient(int idClient, int idPersonne) throws InexistantException{
+		Fonction f = dao.getFonctionOfPersonneForClient(idPersonne, idClient);
+		if(f.getId() != 0) {
+			return f;
 		}else {
 			throw new InexistantException("Il semble que cette personne n'ait pas défini de fonction");
 		}

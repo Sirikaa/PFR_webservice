@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.cgi.udev.resoapi.model.AdresseIp;
+import com.cgi.udev.resoapi.model.Interface;
 import com.cgi.udev.resoapi.model.Materiel;
 
 public class MaterielDao extends AbstractDao{
@@ -73,10 +74,12 @@ public class MaterielDao extends AbstractDao{
 	 * Méthode pour insérer un matériel dans la table materiel
 	 * Prend un matériel en argument et l'id du client
 	 */
-	public void create(Materiel m, int idClient){
+	public boolean create(Materiel m, int idClient){
 		String sql = "insert into materiel (libelle, numserie, idclient, idtype) values (?, ?, ?, ?)";
 		boolean isTransactionOk = false;
+		boolean isAllCreated = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
+			connexion.createStatement().executeQuery("START TRANSACTION");
 			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 				stmt.setString(1, m.getLibelle());
 				stmt.setString(2, m.getSerial());
@@ -86,15 +89,37 @@ public class MaterielDao extends AbstractDao{
 				try(ResultSet rs = stmt.getGeneratedKeys()){
 					if(rs.next()) {
 						m.setId(rs.getInt(1));
+						
+						//Add Interfaces for the Materiel
+						if(m.getInterfaces().size() > 0) {
+							InterfaceDao iDao = new InterfaceDao();
+							for(Interface itf : m.getInterfaces()) {
+								if(iDao.create(itf, m.getId())) {isAllCreated = true;}else {isAllCreated = false;}
+									
+								//Add Adresses IP for the Interface
+								if(itf.getAdressesIp().size() > 0) {
+									AdresseIpDao ipDao = new AdresseIpDao();
+									for(AdresseIp ip : itf.getAdressesIp()) {
+										if(ipDao.create(ip, itf.getId())) {isAllCreated = true;}else {isAllCreated = false;}
+									}
+								}
+							}
+						}
 					}
 				}
-				isTransactionOk = true;
+				if(isAllCreated) {
+					isTransactionOk = true;
+				}else {
+					isTransactionOk = false;
+				}
+				
 			}finally {
 				checkTransactionAndClose(connexion, isTransactionOk);
 			}
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return isTransactionOk;
 	}
 	
 	public boolean update(Materiel m, int idClient) {
@@ -102,7 +127,7 @@ public class MaterielDao extends AbstractDao{
 		boolean isTransactionOk = false;
 		boolean haveWeUpdateSomething = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
-			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
 				stmt.setString(1, m.getLibelle());
 				stmt.setString(2, m.getSerial());
 				stmt.setInt(3, idClient);

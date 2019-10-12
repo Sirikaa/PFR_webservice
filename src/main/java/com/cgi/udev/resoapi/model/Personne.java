@@ -1,18 +1,25 @@
 package com.cgi.udev.resoapi.model;
 
-import java.util.List;
-
 public class Personne {
 	private int id;
 	private String nom;
 	private String prenom;
 	private String telephone;
 	private String email;
-	private List<Fonction> fonctions;
+	private Fonction fonction;
 	
 	public Personne() {
 		
 	}
+	public Personne(int id, String nom, String prenom, String email, String telephone, Fonction fonction) {
+		this.setId(id);
+		this.setNom(nom);
+		this.setPrenom(prenom);
+		this.setEmail(email);
+		this.setTelephone(telephone);
+		this.setFonction(fonction);
+	}
+	
 	public Personne(int id, String nom, String prenom, String email, String telephone) {
 		this.setId(id);
 		this.setNom(nom);
@@ -50,10 +57,10 @@ public class Personne {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public List<Fonction> getFonctions() {
-		return fonctions;
+	public Fonction getFonction() {
+		return fonction;
 	}
-	public void setFonctions(List<Fonction> fonctions) {
-		this.fonctions = fonctions;
+	public void setFonction(Fonction fonction) {
+		this.fonction = fonction;
 	}
 }

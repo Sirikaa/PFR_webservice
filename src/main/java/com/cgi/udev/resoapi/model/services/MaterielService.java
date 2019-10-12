@@ -1,7 +1,6 @@
 package com.cgi.udev.resoapi.model.services;
 
 import java.util.List;
-
 import com.cgi.udev.resoapi.dao.ClientDao;
 import com.cgi.udev.resoapi.dao.MaterielDao;
 import com.cgi.udev.resoapi.model.Materiel;
@@ -44,7 +43,9 @@ private ClientDao cDao = new ClientDao();
 		if(isExisting(materiel)) {
 			if(cDao.getClient(idClient).getId() != 0) {
 				if(areFieldsFilled(materiel, idClient)) {
-					dao.create(materiel, idClient);
+					if(!dao.create(materiel, idClient)) {
+						throw new RequeteInvalideException("Erreur lors de la création du matériel");
+					}
 				}else {
 					throw new RequeteInvalideException("Il manque un champ");
 				}

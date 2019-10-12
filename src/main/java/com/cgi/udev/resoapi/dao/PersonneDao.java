@@ -65,7 +65,7 @@ public class PersonneDao extends AbstractDao {
 												 "on c.id = a.idclient " + 
 												 "where idclient = "+idClient)){
 				while(rs.next()) {
-					personnes.add(buildPersonne(rs));
+					personnes.add(buildPersonneForClient(rs, idClient));
 				}
 			}
 		}catch(SQLException e) {
@@ -78,7 +78,7 @@ public class PersonneDao extends AbstractDao {
 	 * Méthode pour insérer une personne dans la table personne
 	 * Prend une personne en argument
 	 */
-	public void create(Personne p){
+	public void create(Personne p, int idClient){
 		String sql = "insert into personne (nom, prenom, telephone, email) values (?, ?, ?, ?)";
 		boolean isTransactionOk = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
@@ -91,6 +91,13 @@ public class PersonneDao extends AbstractDao {
 				try(ResultSet rs = stmt.getGeneratedKeys()){
 					if(rs.next()) {
 						p.setId(rs.getInt(1));
+						String sql2 = "insert into appartient (idpersonne, idfonction, idclient) values (?, ?, ?)";
+						try(PreparedStatement stmt2 = connexion.prepareStatement(sql2)) {
+							stmt2.setInt(1, p.getId());
+							stmt2.setInt(2, p.getFonction().getId());
+							stmt2.setInt(3, idClient);
+							stmt2.executeUpdate();
+						}
 					}
 				}
 				isTransactionOk = true;
@@ -107,7 +114,7 @@ public class PersonneDao extends AbstractDao {
 		boolean isTransactionOk = false;
 		boolean haveWeUpdateSomething = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
-			try(PreparedStatement stmt = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			try(PreparedStatement stmt = connexion.prepareStatement(sql)) {
 				stmt.setString(1, p.getNom());
 				stmt.setString(2, p.getPrenom());
 				stmt.setString(3, p.getTelephone());
@@ -157,5 +164,10 @@ public class PersonneDao extends AbstractDao {
 	
 	private Personne buildPersonne(ResultSet rs) throws SQLException{
 		return new Personne(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("email"), rs.getString("telephone"));
+	}
+	
+	private Personne buildPersonneForClient(ResultSet rs, int idClient) throws SQLException{
+		FonctionDao fDao = new FonctionDao();
+		return new Personne(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("email"), rs.getString("telephone"), fDao.getFonctionOfPersonneForClient(idClient, rs.getInt("id")));
 	}
 }

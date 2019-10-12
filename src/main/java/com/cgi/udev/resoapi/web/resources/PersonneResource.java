@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.cgi.udev.resoapi.model.Personne;
 import com.cgi.udev.resoapi.model.exceptions.InexistantException;
@@ -27,14 +28,18 @@ public class PersonneResource {
 	}
 	
 	@DELETE
-	public void delete(@PathParam("id") int id) throws InexistantException{
+	public Response delete(@PathParam("id") int id) throws InexistantException{
 		pServ.delete(id);
+		return Response.ok()
+			       .build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void update(@PathParam("id") int id, Personne p) throws RequeteInvalideException, InexistantException{
+	public Response update(@PathParam("id") int id, Personne p) throws RequeteInvalideException, InexistantException{
 		p.setId(id);
 		pServ.update(p);
+		return Response.ok()
+				       .build();
 	}
 }

@@ -73,7 +73,7 @@ public class AdresseIpDao extends AbstractDao{
 	 * Méthode pour insérer une adresse IP dans la table adresseip
 	 * Prend une adresse ip en argument et l'id de l'interface
 	 */
-	public void create(AdresseIp ip, int idInterface){
+	public boolean create(AdresseIp ip, int idInterface){
 		String sql = "insert into adresseip (ipV4, ipV6, masque, idinterface, idtypeaff) values (?, ?, ?, ?, ?)";
 		boolean isTransactionOk = false;
 		try (Connection connexion = MyDataSource.getSingleton().getConnection()){
@@ -87,15 +87,16 @@ public class AdresseIpDao extends AbstractDao{
 				try(ResultSet rs = stmt.getGeneratedKeys()){
 					if(rs.next()) {
 						ip.setId(rs.getInt(1));
+						isTransactionOk = true;
 					}
 				}
-				isTransactionOk = true;
 			}finally {
 				checkTransactionAndClose(connexion, isTransactionOk);
 			}
 		}catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return isTransactionOk;
 	}
 	
 	public boolean update(AdresseIp ip, int idInterface) {
